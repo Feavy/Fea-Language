@@ -10,7 +10,10 @@ public class TypeMatches {
 	static {
 		typeMatches.put("boolean", "true|false");
 		typeMatches.put("int", "[0-9]+");
-		typeMatches.put("float|double", "[0-9]+(.[0-9]+)?");
+		typeMatches.put("float", "[0-9]+(.[0-9]+)?");
+		typeMatches.put("double", "[0-9]+(.[0-9]+)?");
+		typeMatches.put("string", "(\".*\")|('.*')");
+		typeMatches.put("character", "(\".\")|('.')");
 	}
 	
 }

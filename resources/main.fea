@@ -1,7 +1,10 @@
 test:boolean = true;
 nb:int = 9;
+flottant:flofat = 35.6;
+chaine:string = "Salut à tous !";
 if(test) {
-	1_tab1:int[] = [1, 2, 3];
+	1_tab1:int[3] = [1, 2, 3];
+	_tab1:int[3] = [1, 2g, 3];
 	tab2:int[5];fl:float;
 	if(test) {
 		print("Tableau créé");

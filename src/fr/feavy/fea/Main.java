@@ -20,14 +20,13 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException {
 		
-		System.out.println(arrayValuePattern.toString());
-		
 		StringBuffer buffer = new StringBuffer();
 		PrintWriter writer = new PrintWriter(new File(Main.class.getResource("/output.c").getPath()));
 		BufferedReader reader = new BufferedReader(new InputStreamReader(Main.class.getResourceAsStream("/main.fea")));
 		String line = null;
+		ArrayList<String> strings = new ArrayList<String>();
 		while((line = reader.readLine()) != null) {
-			line = line.trim().replaceAll("\\s", "");
+			line = line.trim().replaceAll("\\s", "");		// Ne pas supprimer les espaces des chaînes de caracètres littérales
 			buffer.append(line);
 		}
 		reader.close();
@@ -38,7 +37,6 @@ public class Main {
 		code.process();
 		
 		System.out.println(code.getContent());
-		System.out.println(code.getBlock(0).getBlock(0).getBlock(0).getContent());
 		
 		Matcher languageMatcher = InstructionParser.getLanguagePattern().matcher(str);
 		
