@@ -1,0 +1,15 @@
+test:boolean = true;
+nb:int = 9;
+if(test) {
+	1_tab1:int[] = [1, 2, 3];
+	tab2:int[5];fl:float;
+	if(test) {
+		print("Tableau créé");
+		if(test2) {
+		}
+	}else{
+		print("Les tableaux sont quand-mêmes créées");
+	}
+}else{
+	print("Autre block");
+}
