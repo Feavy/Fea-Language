@@ -24,9 +24,24 @@ public class Main {
 		PrintWriter writer = new PrintWriter(new File(Main.class.getResource("/output.c").getPath()));
 		BufferedReader reader = new BufferedReader(new InputStreamReader(Main.class.getResourceAsStream("/main.fea")));
 		String line = null;
+		
+		Pattern stringPattern = Pattern.compile(TypeMatches.typeMatches.get("string"));
+		
 		ArrayList<String> strings = new ArrayList<String>();
 		while((line = reader.readLine()) != null) {
-			line = line.trim().replaceAll("\\s", "");		// Ne pas supprimer les espaces des chaînes de caracètres littérales
+			strings.clear();
+			Matcher stringMatcher = stringPattern.matcher(line);
+			while(stringMatcher.find()) {
+				strings.add(line.substring(stringMatcher.start(), stringMatcher.end()));
+			}
+			for(int i = 0; i < strings.size(); i++)
+				line = line.replace(strings.get(i), "<string_"+i+">");
+			
+			line = line.trim().replaceAll("\\s", "");
+			
+			for(int i = 0; i < strings.size(); i++)
+				line = line.replace("<string_"+i+">", strings.get(i));		// Remplacer dans le code entier au lieu de ligne par ligne ?
+			
 			buffer.append(line);
 		}
 		reader.close();

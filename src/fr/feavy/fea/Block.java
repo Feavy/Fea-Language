@@ -1,16 +1,20 @@
 package fr.feavy.fea;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
 
 public class Block {
 
+	private ArrayList<Instruction> instructions;
+	
 	private String content;
 	private ArrayList<Block> subBlocks;
 	private int id;
 	
-	public Block(int id, String instructions) {
-		this.content = instructions;
+	public Block(int id, String blockContent) {
+		this.content = blockContent;
 		this.subBlocks = new ArrayList<Block>();
+		this.instructions = new ArrayList<Instruction>();
 		this.id = id;
 	}
 	
@@ -36,6 +40,13 @@ public class Block {
 			b = subBlocks.get(i);
 			content = content.replace("{"+b.getContent()+"}", "{<block_"+i+">}");
 			b.process();
+		}
+		
+		Matcher instructionMatcher = InstructionParser.getLanguagePattern().matcher(content);
+		
+		System.out.println("Block "+id);
+		while(instructionMatcher.find()) {
+			System.out.println("Instruction : "+(content.substring(instructionMatcher.start(), instructionMatcher.end())));
 		}
 	}
 	

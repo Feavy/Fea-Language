@@ -7,15 +7,23 @@ import java.util.regex.Pattern;
 
 public class InstructionParser {
 
-	private static final String INSTRUCTION = "(<VARIABLE_DEFINITION>);";
+	private static final String INSTRUCTION = "(<VARIABLE_DEFINITION>);|(<BLOCK>)";
 	
 	private static final Map<String, String> WORDS = new HashMap<String, String>();
+	
+	// Blocks
+	
+	static {
+		WORDS.put("BLOCK", "(?<blockName>[^\\{;]*)\\{<block_[0-9]+>\\}");
+	}
+
+	//
 	
 	// Variables
 	
 	static {
 		WORDS.put("VARIABLE_DEFINITION", "<VARIABLE_NAME>:<TYPE>(=(?<value>.+?))?");
-		WORDS.put("TYPE", "(?<type>(int|string|int|float|double|boolean))(\\[(?<length>[0-9]*)\\])?");
+		WORDS.put("TYPE", "(?<type>(byte|char|int|long|string|float|double|boolean))(\\[(?<length>[0-9]*)\\])?");
 		WORDS.put("VARIABLE_NAME", "(?<varName>[a-z0-9_]+)");
 	}
 	
