@@ -5,6 +5,8 @@ import java.util.regex.Matcher;
 
 public class Block {
 
+	private ArrayList<Variable> vars;
+	
 	private ArrayList<Instruction> instructions;
 	
 	private String content;
@@ -13,6 +15,7 @@ public class Block {
 	
 	public Block(int id, String blockContent) {
 		this.content = blockContent;
+		this.vars = new ArrayList<Variable>();
 		this.subBlocks = new ArrayList<Block>();
 		this.instructions = new ArrayList<Instruction>();
 		this.id = id;
@@ -34,20 +37,35 @@ public class Block {
 		return content;
 	}
 
-	public void process() {
+	public boolean process() {
+		boolean validBlock = true;
+		
+		boolean validSubBlock = true;
+		
 		Block b;
 		for(int i = 0; i < subBlocks.size(); i++) {
 			b = subBlocks.get(i);
 			content = content.replace("{"+b.getContent()+"}", "{<block_"+i+">}");
-			b.process();
+			validSubBlock=b.process();
+			if(!validSubBlock)
+				validBlock = false;
 		}
 		
 		Matcher instructionMatcher = InstructionParser.getLanguagePattern().matcher(content);
 		
-		System.out.println("Block "+id);
+		Instruction current;
+		
 		while(instructionMatcher.find()) {
-			System.out.println("Instruction : "+(content.substring(instructionMatcher.start(), instructionMatcher.end())));
+			if(instructionMatcher.group("varName") != null) {
+				current = new VarDeclInstruction(content.substring(instructionMatcher.start(), instructionMatcher.end()));
+			}else
+				current = new Instruction(content.substring(instructionMatcher.start(), instructionMatcher.end()));
+			instructions.add(current);
+			if(!current.valid)
+				validBlock = false;
 		}
+		
+		return validBlock;
 	}
 	
 }

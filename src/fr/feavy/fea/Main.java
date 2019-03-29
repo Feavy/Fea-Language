@@ -13,11 +13,6 @@ public class Main {
 
 	public final static Pattern blockBoundPattern = Pattern.compile("\\{|\\}");
 	
-	public final static Pattern arrayValuePattern = Pattern.compile("\\[(([^,\\]]+),?)+\\]");
-	public final static Pattern arraySubValuePattern = Pattern.compile("\\[?(?<value>[^,\\]]+),?");
-	
-	public final static String invalidVarName = "[0-9]+.*";
-	
 	public static void main(String[] args) throws IOException {
 		
 		StringBuffer buffer = new StringBuffer();
@@ -29,6 +24,8 @@ public class Main {
 		
 		ArrayList<String> strings = new ArrayList<String>();
 		while((line = reader.readLine()) != null) {
+			if(line.startsWith("//"))
+				continue;
 			strings.clear();
 			Matcher stringMatcher = stringPattern.matcher(line);
 			while(stringMatcher.find()) {
@@ -46,66 +43,12 @@ public class Main {
 		}
 		reader.close();
 		String str = buffer.toString();
+		str = str.replaceAll("\\/*.*\\/", "");
 		
 		Block code = processBlock(str, 0);
+		boolean valid = code.process();
 		
-		code.process();
-		
-		System.out.println(code.getContent());
-		
-		Matcher languageMatcher = InstructionParser.getLanguagePattern().matcher(str);
-		
-		String name, value, type, length, value2;
-		boolean valide = true;
-		
-		while(languageMatcher.find()) {
-			valide = true;
-			name = languageMatcher.group("varName");
-			type = languageMatcher.group("type").toLowerCase();
-			value = languageMatcher.group("value");
-			length = languageMatcher.group("length");
-			
-			System.out.println("var name : "+name);
-			System.out.print("type : "+type);
-			
-			if(length != null) {
-				System.out.println(" array");
-				if(length.length() > 0) {
-					System.out.println("length : "+length);
-				}else {
-					System.out.println("length : variable");
-				}
-			}else {
-				System.out.println();
-			}
-			if(value != null) {
-				System.out.println("value : "+value);
-				if(length == null) {
-					if(TypeMatches.typeMatches.containsKey(type)) {
-						valide = value.matches(TypeMatches.typeMatches.get(type));
-					}
-				}else {
-					Matcher arrayValueMatcher = arrayValuePattern.matcher(value);
-					if(arrayValueMatcher.matches()) {
-						Matcher arraySubValueMatcher = arraySubValuePattern.matcher(value);
-						while(arraySubValueMatcher.find()) {
-							value2 = arraySubValueMatcher.group("value");
-							if(!value2.matches(TypeMatches.typeMatches.get(type))) {
-								valide = false;
-								break;
-							}
-						}
-					} else {
-						valide = false;
-					}
-				}
-			}
-			if(name.matches(invalidVarName))
-				valide = false;
-			System.out.println("    Valide : "+valide);
-			System.out.println();
-		}
-		
+		System.out.println("Code valide : "+valid);
 	}
 	
 	private static String[] extractBlocks(String str) {
