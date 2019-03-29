@@ -12,6 +12,8 @@ public class VarDeclInstruction extends Instruction{
 	
 	public final static String invalidVarName = "[0-9]+.*";
 	
+	private Variable variable;
+	
 	private String name, value, type;
 	private int length;
 	private boolean isArray;
@@ -25,12 +27,11 @@ public class VarDeclInstruction extends Instruction{
 		name = "";
 		value = null;
 		type = "";
-	
-		System.out.println("Var decl : "+content);
 		
 		Matcher languageMatcher = InstructionParser.getLanguagePattern().matcher(content);
 		
 		if(languageMatcher.find()) {
+			name = languageMatcher.group("varName");
 			String length = languageMatcher.group("length");
 			value = languageMatcher.group("value");
 			type = languageMatcher.group("type");
@@ -70,13 +71,13 @@ public class VarDeclInstruction extends Instruction{
 			}
 			if(name.matches(invalidVarName))
 				valid = false;
-			System.out.println("    Valide : "+valid);
-			System.out.println();
 		}
+		if(valid)
+			variable = new Variable(name, type, value);
 	}
 	
-	public String getVarName() {
-		return name;
+	public Variable getVariable() {
+		return variable;
 	}
 	
 }

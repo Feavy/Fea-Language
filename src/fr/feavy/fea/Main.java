@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,12 +44,22 @@ public class Main {
 		}
 		reader.close();
 		String str = buffer.toString();
-		str = str.replaceAll("\\/*.*\\/", "");
+		str = str.replaceAll("\\/\\*.\\*\\/", "");
 		
 		Block code = processBlock(str, 0);
-		boolean valid = code.process();
+		code.process(null);
+		
+		boolean valid = code.isValid();
 		
 		System.out.println("Code valide : "+valid);
+		
+		if(valid)
+			code.transpile();
+		else {
+			List<Instruction> wrongInstructions = code.getWrongInstructions();
+			for(Instruction i : wrongInstructions)
+				System.out.println("Mauvaise instruction : "+i.getContent());
+		}
 	}
 	
 	private static String[] extractBlocks(String str) {

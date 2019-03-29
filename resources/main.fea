@@ -1,18 +1,21 @@
-test:boolean = true;
-nb:int = 9;
-flottant:float = 35.6;
-chaine:string = "Salut à tous !";
-if(test) {
-	_tab1:int[3] = [1, 2, 3];
-	_tab2:int[3] = [1, 2g, 3];
-	tab2:int[5];fl:float;
+main():int {
+	test:boolean = true;
+	nb:int = 9;
+	flottant:float = 35.6;
+	chaine:string = "Salut à tous !";
 	if(test) {
-		//print("Tableau créé");
-		if(test2) {
+		_tab1:int[3] = [1, 2, 3];
+		_tab2:int[3] = [1, 2, 3];
+		tab2:int[5];fl:float;
+		nb = 42;
+		if(test) {
+			//print("Tableau créé");
+			if(test2) {
+			}
+		}else{
+			//print("Les tableaux sont quand-mêmes créées");
 		}
 	}else{
-		//print("Les tableaux sont quand-mêmes créées");
+		//print("Autre block");
 	}
-}else{
-	//print("Autre block");
 }
