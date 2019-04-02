@@ -25,8 +25,6 @@ public class Main {
 		
 		ArrayList<String> strings = new ArrayList<String>();
 		while((line = reader.readLine()) != null) {
-			if(line.startsWith("//"))
-				continue;
 			strings.clear();
 			Matcher stringMatcher = stringPattern.matcher(line);
 			while(stringMatcher.find()) {
@@ -36,7 +34,8 @@ public class Main {
 				line = line.replace(strings.get(i), "<string_"+i+">");
 			
 			line = line.trim().replaceAll("\\s", "");
-			
+			if(line.startsWith("//"))
+				continue;
 			for(int i = 0; i < strings.size(); i++)
 				line = line.replace("<string_"+i+">", strings.get(i));		// Remplacer dans le code entier au lieu de ligne par ligne ?
 			

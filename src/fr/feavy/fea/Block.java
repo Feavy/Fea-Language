@@ -22,7 +22,7 @@ public class Block {
 	
 	private boolean valid;
 	
-	public static final Pattern blockPattern = Pattern.compile("(?<blockName>[a-z ]+)(\\((?<blockParams>.*)\\))?\\{<[a-z]+_(?<blockId>[0-9]+)>\\}");
+	public static final Pattern blockPattern = Pattern.compile("(?<blockName>[a-z :\\(\\)]+)(\\((?<blockParams>.*)\\))?\\{<[a-z]+_(?<blockId>[0-9]+)>\\}");
 	
 	public Block(int id, String blockContent) {
 		this.valid = false;
@@ -79,6 +79,7 @@ public class Block {
 			
 			if(blockMatcher.find()) {
 				blockId = Integer.parseInt(blockMatcher.group("blockId"));
+				System.out.println("Block : "+blockMatcher.group("blockName"));
 				/*System.out.println("Current instruction : "+currentInstructionStr);
 				System.out.println("Block name : "+blockMatcher.group("blockName"));
 				System.out.println("Block params : "+blockMatcher.group("blockParams"));

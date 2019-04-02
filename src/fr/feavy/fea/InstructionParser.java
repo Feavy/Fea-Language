@@ -10,7 +10,17 @@ public class InstructionParser {
 	private static final String INSTRUCTION = "(<VARIABLE_DEFINITION>|<VARIABLE_ASSIGNATION>);|(<BLOCK>)";
 
 	private static final Map<String, String> WORDS = new HashMap<String, String>();
-
+	
+	private static final String LANGUAGE = "simple_stmt|compound_stmt";
+	
+	static {
+		WORDS.put("simple_stmt", "(var_def|var_assignation|func_call);");
+	}
+	
+	// value -> literal|var|func_call
+	// var -> [a-z]+
+	// func_call -> [a-z]+\\((value(,value)*)?\\)
+	
 	// Blocks
 
 	static {
