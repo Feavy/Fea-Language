@@ -14,7 +14,7 @@ public class Main {
 	static {
 		grammar.putSymbol("stmt", "<compound_stmt>|<simple_stmt>");
 		
-		grammar.putSymbol("compound_stmt", "<if_stmt>|<while_stmt>");
+		grammar.putSymbol("compound_stmt", "<if_stmt>|<while_stmt>|<method_decl>");
 		grammar.putSymbol("if_stmt", "if\\(<expr>\\)\\{(<stmt>)*\\}(else\\{(<stmt>)*\\})?");
 		grammar.putSymbol("while_stmt", "while\\{((<stmt>)*)\\}");
 		
@@ -22,10 +22,11 @@ public class Main {
 		
 		grammar.putSymbol("type", "string|boolean|int|float");
 		grammar.putSymbol("var_assignment_left", "(<var_declaration>|NAME)=");
-		grammar.putSymbol("var_assignment", "<var_assignment_left><expr>;");
+		grammar.putSymbol("var_assignment", "<var_assignment_left>(<expr>|\\[(<expr>(,<expr>)*)?\\]);");
 		grammar.putSymbol("var_declaration", "NAME:<type>|<var_declaration>\\[<expr>\\]");
 		
 		grammar.putSymbol("method_signature", "NAME\\((NAME:<type>(,NAME:<type>)*)?\\):<type>");
+		grammar.putSymbol("method_decl", "<method_signature>\\{(<stmt>)*\\}");
 		
 		grammar.putSymbol("expr", "true|false|NAME|STRING|NUMBER|(<expr>(\\+<expr>)+)");
 		
@@ -39,17 +40,26 @@ public class Main {
 	public static void main(String[] args) {
 			
 		try {
-			String code = loadCodeFromFile("/main.fea");
-			System.out.println(code);
+			Code code = new Code(loadCodeFromFile("/main.fea"));
+			System.out.println(code.getContent());
 			System.out.println("Valide : "+grammar.isValid(code));
+			System.out.println(grammar.toString());
+			
+			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+			String line;
+			while(!(line = reader.readLine()).equals("end")) {
+				System.out.println(((TerminalLexeme)code.getLexeme(line)).getValue());
+			}
+			reader.close();
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		System.out.println(grammar.toString());
+		/*System.out.println(grammar.toString());
 		System.out.println();
-		System.out.println("Code valide : "+grammar.isValid(block));
+		System.out.println("Code valide : "+grammar.isValid(block));*/
 		
 		// 1 - Remplacer les strings par STRING, noms par NAME, nombres par NUMBER...
 		// 2 - Exécuter la grammaire en boucle tant qu'il y a des transformations.
@@ -60,8 +70,7 @@ public class Main {
 		String line;
 		BufferedReader reader = new BufferedReader(new InputStreamReader(Main.class.getResourceAsStream(path)));
 		while((line = reader.readLine()) != null) {
-			line = line.replaceAll("\\s", "");
-			if(!line.startsWith("//"))
+			if(!line.replaceAll("\\s", "").startsWith("//"))
 				code.append(line);
 		}
 		reader.close();
