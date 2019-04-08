@@ -1,9 +1,9 @@
-package fr.feavy.fea2;
+package fr.feavy.fea;
 
 public class Lexeme {
 
 	private String name;
-	private Lexeme childs[];
+	protected Lexeme childs[];
 		
 	public Lexeme(String name, Lexeme ...childs) {
 		this.name = name;

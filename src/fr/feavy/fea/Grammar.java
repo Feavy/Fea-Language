@@ -1,4 +1,4 @@
-package fr.feavy.fea2;
+package fr.feavy.fea;
 
 import java.util.ArrayList;
 import java.util.HashMap;

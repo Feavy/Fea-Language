@@ -1,104 +1,83 @@
 package fr.feavy.fea;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Main {
 
-	public final static Pattern blockBoundPattern = Pattern.compile("\\{|\\}");
 	
-	public static void main(String[] args) throws IOException {
+	public static String block = "if(true){while{a:string=bonjour+test;a=autre;a=\"other\";nb:int=5;}}else{}while{}";
+
+	public static Grammar grammar = new Grammar();
+	
+	static {
+		grammar.putSymbol("stmt", "<compound_stmt>|<simple_stmt>");
 		
-		StringBuffer buffer = new StringBuffer();
-		PrintWriter writer = new PrintWriter(new File(Main.class.getResource("/output.c").getPath()));
-		BufferedReader reader = new BufferedReader(new InputStreamReader(Main.class.getResourceAsStream("/main.fea")));
-		String line = null;
+		grammar.putSymbol("compound_stmt", "<if_stmt>|<while_stmt>|<method_decl>");
+		grammar.putSymbol("if_stmt", "if\\(<expr>\\)\\{(<stmt>)*\\}(else\\{(<stmt>)*\\})?");
+		grammar.putSymbol("while_stmt", "while\\{((<stmt>)*)\\}");
 		
-		Pattern stringPattern = Pattern.compile(TypeMatches.typeMatches.get("string"));
+		grammar.putSymbol("simple_stmt", "<var_assignment>|<var_declaration>;");
 		
-		ArrayList<String> strings = new ArrayList<String>();
-		while((line = reader.readLine()) != null) {
-			strings.clear();
-			Matcher stringMatcher = stringPattern.matcher(line);
-			while(stringMatcher.find()) {
-				strings.add(line.substring(stringMatcher.start(), stringMatcher.end()));
+		grammar.putSymbol("type", "string|boolean|int|float");
+		grammar.putSymbol("var_assignment_left", "(<var_declaration>|NAME)=");
+		grammar.putSymbol("var_assignment", "<var_assignment_left>(<expr>|\\[(<expr>(,<expr>)*)?\\]);");
+		grammar.putSymbol("var_declaration", "NAME:<type>|<var_declaration>\\[<expr>\\]");
+		
+		grammar.putSymbol("method_signature", "NAME\\((NAME:<type>(,NAME:<type>)*)?\\):<type>");
+		grammar.putSymbol("method_decl", "<method_signature>\\{(<stmt>)*\\}");
+		
+		grammar.putSymbol("expr", "true|false|NAME|STRING|NUMBER|(<expr>(\\+<expr>)+)");
+		
+		grammar.putTerminalSymbol("STRING", "\"[^\"]*\"");
+		grammar.putTerminalSymbol("NAME", "[a-zA-Z_][a-zA-Z0-9_]*");
+		grammar.putTerminalSymbol("NUMBER", "[0-9]+(\\.[0-9]+)?");
+		
+		grammar.autoExtractKeywords();
+	}
+	
+	public static void main(String[] args) {
+			
+		try {
+			Code code = new Code(loadCodeFromFile("/main.fea"));
+			System.out.println(code.getContent());
+			System.out.println("Valide : "+grammar.isValid(code));
+			System.out.println(grammar.toString());
+			
+			code.processLexemes((TerminalLexeme)code.getLexeme("stmt_12"));
+			
+			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+			String line;
+			while(!(line = reader.readLine()).equals("end")) {
+				System.out.println(((TerminalLexeme)code.getLexeme(line)).toString());
+				//System.out.println(((TerminalLexeme)code.getLexeme(line)).getValue());
 			}
-			for(int i = 0; i < strings.size(); i++)
-				line = line.replace(strings.get(i), "<string_"+i+">");
+			reader.close();
 			
-			line = line.trim().replaceAll("\\s", "");
-			if(line.startsWith("//"))
-				continue;
-			for(int i = 0; i < strings.size(); i++)
-				line = line.replace("<string_"+i+">", strings.get(i));		// Remplacer dans le code entier au lieu de ligne par ligne ?
-			
-			buffer.append(line);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		/*System.out.println(grammar.toString());
+		System.out.println();
+		System.out.println("Code valide : "+grammar.isValid(block));*/
+		
+		// 1 - Remplacer les strings par STRING, noms par NAME, nombres par NUMBER...
+		// 2 - Exécuter la grammaire en boucle tant qu'il y a des transformations.
+	}
+
+	public static String loadCodeFromFile(String path) throws IOException {
+		StringBuilder code = new StringBuilder();
+		String line;
+		BufferedReader reader = new BufferedReader(new InputStreamReader(Main.class.getResourceAsStream(path)));
+		while((line = reader.readLine()) != null) {
+			if(!line.replaceAll("\\s", "").startsWith("//"))
+				code.append(line);
 		}
 		reader.close();
-		String str = buffer.toString();
-		str = str.replaceAll("\\/\\*.\\*\\/", "");
-		
-		Block code = processBlock(str, 0);
-		code.process(null);
-		
-		boolean valid = code.isValid();
-		
-		System.out.println("Code valide : "+valid);
-		
-		if(valid)
-			code.transpile();
-		else {
-			List<Instruction> wrongInstructions = code.getWrongInstructions();
-			for(Instruction i : wrongInstructions)
-				System.out.println("Mauvaise instruction : "+i.getContent());
-		}
+		return code.toString().replaceAll("/\\**.\\*/", "");
 	}
 	
-	private static String[] extractBlocks(String str) {
-		Matcher blockBoundMatcher = blockBoundPattern.matcher(str);
-		
-		int start = 0;
-		int end = 0;
-		
-		int count = 0;
-		
-		ArrayList<String> blocks = new ArrayList<>();
-		
-		while(blockBoundMatcher.find()) {
-			if(count == 0)
-				start = blockBoundMatcher.start();
-			
-			if(str.substring(blockBoundMatcher.start(), blockBoundMatcher.end()).equals("{")) 
-				count++;
-			else
-				count--;
-			if(count == 0) {
-				end = blockBoundMatcher.end();
-				blocks.add(str.substring(start+1, end-1));
-			}
-		}
-
-		return blocks.toArray(new String[blocks.size()]);
-	}
-	
-	private static int id = 0;
-	
-	private static Block processBlock(String block, int depth) {
-		Block b = new Block(id++, block);
-		
-		String[] subBlocks = extractBlocks(block);
-		for(String subBlockStr : subBlocks) {
-			Block subBlock = processBlock(subBlockStr, depth+1);
-			b.addSubBlock(subBlock);
-		}
-		return b;
-	}
-
 }

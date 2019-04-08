@@ -1,4 +1,4 @@
-package fr.feavy.fea2;
+package fr.feavy.fea;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,6 +47,24 @@ public class Code {
 		return lexemes.get(word).size();
 	}
 
+	public void processLexemes(TerminalLexeme l) {
+		Matcher lexemeStringMatcher = Pattern.compile("<([A-Za-z_]+_[0-9]+)>|([A-Z]+_[0-9]+)").matcher(l.getValue());
+		ArrayList<Lexeme> childs = new ArrayList<>();
+		TerminalLexeme current;
+		while(lexemeStringMatcher.find()) {
+			if(lexemeStringMatcher.group(1) != null) {
+				current = (TerminalLexeme)getLexeme(lexemeStringMatcher.group(1));
+				processLexemes(current);
+				childs.add(current);
+			}else if(lexemeStringMatcher.group(2) != null) {
+				current = (TerminalLexeme)getLexeme(lexemeStringMatcher.group(2));
+				processLexemes(current);
+				childs.add(current);
+			}
+		}
+		l.childs = childs.toArray(new Lexeme[0]);
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder rep = new StringBuilder();
