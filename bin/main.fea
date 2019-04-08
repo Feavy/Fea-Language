@@ -8,9 +8,9 @@ main():int {
 		_tab2:int[3] = [1, 2, 3];
 		tab2:int[5];fl:float;
 		nb = 42;
-		if(test) {
+		if(true) {
 			//print("Tableau créé");
-			if(test2) {
+			if(false) {
 			}
 		}else{
 			//print("Les tableaux sont quand-mêmes créées");

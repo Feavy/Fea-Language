@@ -32,9 +32,14 @@ public class Code {
 		Matcher lexemeStringMatcher = Pattern.compile("([A-Za-z_]+)_([0-9]+)").matcher(str);
 		if(lexemeStringMatcher.find()) {
 			if(lexemes.containsKey(lexemeStringMatcher.group(1))) {
-				TerminalLexeme l =  (TerminalLexeme)lexemes.get(lexemeStringMatcher.group(1)).get(Integer.parseInt(lexemeStringMatcher.group(2)));
-				if(l.getValue().matches("<([A-Za-z_]+)_([0-9]+)>"))
-					return getLexeme(l.getValue());
+				Lexeme l =  lexemes.get(lexemeStringMatcher.group(1)).get(Integer.parseInt(lexemeStringMatcher.group(2)));
+				Matcher lexemeStringMatcher2 = Pattern.compile("[A-Za-z_]+_[0-9]+").matcher(l.getContent());
+				int foundAmount = 0;
+				while(lexemeStringMatcher2.find())
+					foundAmount++;
+				
+				if(foundAmount == 1)
+					return getLexeme(l.getContent());
 				return l;
 			}
 		}
@@ -47,22 +52,22 @@ public class Code {
 		return lexemes.get(word).size();
 	}
 
-	public void processLexemes(TerminalLexeme l) {
-		Matcher lexemeStringMatcher = Pattern.compile("<([A-Za-z_]+_[0-9]+)>|([A-Z]+_[0-9]+)").matcher(l.getValue());
+	public void processLexemes(Lexeme l) {
+		Matcher lexemeStringMatcher = Pattern.compile("<([A-Za-z_]+_[0-9]+)>|([A-Z]+_[0-9]+)").matcher(l.getContent());
 		ArrayList<Lexeme> childs = new ArrayList<>();
-		TerminalLexeme current;
+		Lexeme current;
 		while(lexemeStringMatcher.find()) {
 			if(lexemeStringMatcher.group(1) != null) {
-				current = (TerminalLexeme)getLexeme(lexemeStringMatcher.group(1));
+				current = getLexeme(lexemeStringMatcher.group(1));
 				processLexemes(current);
 				childs.add(current);
 			}else if(lexemeStringMatcher.group(2) != null) {
-				current = (TerminalLexeme)getLexeme(lexemeStringMatcher.group(2));
+				current = getLexeme(lexemeStringMatcher.group(2));
 				processLexemes(current);
 				childs.add(current);
 			}
 		}
-		l.childs = childs.toArray(new Lexeme[0]);
+		l.setChilds(childs.toArray(new Lexeme[0]));
 	}
 	
 	@Override
@@ -74,7 +79,6 @@ public class Code {
 		Entry<String, ArrayList<Lexeme>> currentLexemes;
 
 		Lexeme l;
-		TerminalLexeme tl;
 		int max;
 
 		while (lexemeIterators.hasNext()) {
@@ -82,12 +86,7 @@ public class Code {
 			max = currentLexemes.getValue().size();
 			for (int i = 0; i < max; i++) {
 				l = currentLexemes.getValue().get(i);
-				if (l instanceof TerminalLexeme) {
-					tl = (TerminalLexeme) l;
-					rep.append(tl.getName() + "_" + i + " --> " + tl.getValue() + "\n");
-				} else {
-					rep.append(l.getName() + " --> " + l.toString() + "\n");
-				}
+				rep.append(l.getName() + "_" + i + " --> " + l.getContent() + "\n");
 			}
 
 		}

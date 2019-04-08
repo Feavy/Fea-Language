@@ -14,7 +14,7 @@ public class Main {
 	static {
 		grammar.putSymbol("stmt", "<compound_stmt>|<simple_stmt>");
 		
-		grammar.putSymbol("compound_stmt", "<if_stmt>|<while_stmt>|<method_decl>");
+		grammar.putSymbol("compound_stmt", "<if_stmt>|<while_stmt>|<func_decl>");
 		grammar.putSymbol("if_stmt", "if\\(<expr>\\)\\{(<stmt>)*\\}(else\\{(<stmt>)*\\})?");
 		grammar.putSymbol("while_stmt", "while\\{((<stmt>)*)\\}");
 		
@@ -25,8 +25,8 @@ public class Main {
 		grammar.putSymbol("var_assignment", "<var_assignment_left>(<expr>|\\[(<expr>(,<expr>)*)?\\]);");
 		grammar.putSymbol("var_declaration", "NAME:<type>|<var_declaration>\\[<expr>\\]");
 		
-		grammar.putSymbol("method_signature", "NAME\\((NAME:<type>(,NAME:<type>)*)?\\):<type>");
-		grammar.putSymbol("method_decl", "<method_signature>\\{(<stmt>)*\\}");
+		grammar.putSymbol("func_signature", "NAME\\((NAME:<type>(,NAME:<type>)*)?\\):<type>");
+		grammar.putSymbol("func_decl", "<func_signature>\\{(<stmt>)*\\}");
 		
 		grammar.putSymbol("expr", "true|false|NAME|STRING|NUMBER|(<expr>(\\+<expr>)+)");
 		
@@ -45,13 +45,17 @@ public class Main {
 			System.out.println("Valide : "+grammar.isValid(code));
 			System.out.println(grammar.toString());
 			
-			code.processLexemes((TerminalLexeme)code.getLexeme("stmt_12"));
+			code.processLexemes(code.getLexeme("stmt_12"));
 			
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 			String line;
 			while(!(line = reader.readLine()).equals("end")) {
-				System.out.println(((TerminalLexeme)code.getLexeme(line)).toString());
-				//System.out.println(((TerminalLexeme)code.getLexeme(line)).getValue());
+				try {
+					code.getLexeme(line).debug(0);
+					//System.out.println((code.getLexeme(line)).toString());
+				}catch(Exception e) {
+					System.err.println("Inexistant");
+				}
 			}
 			reader.close();
 			

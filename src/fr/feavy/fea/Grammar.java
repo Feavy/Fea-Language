@@ -102,7 +102,7 @@ public class Grammar {
 				if (!keywords.contains(current)) {
 					System.out.println("replace : " + current);
 					constants.get(e.getKey()).add(current);
-					currentCode.addLexeme(e.getKey(), new TerminalLexeme(e.getKey(), current));
+					currentCode.addLexeme(e.getKey(), new Lexeme(e.getKey(), current));
 					input = input.substring(0, currentMatcher.start() + offset) + "<"+e.getKey().toLowerCase()+">"
 							+ input.substring(currentMatcher.end() + offset);
 					offset += e.getKey().length()+2 - (currentMatcher.end() - currentMatcher.start());
@@ -144,7 +144,7 @@ public class Grammar {
 				
 				offset += ("<" + word + "_"+index+">").length() - (currentMatcher.end() - currentMatcher.start());
 				
-				currentCode.addLexeme(word, new TerminalLexeme(word, currentMatcher.group()));
+				currentCode.addLexeme(word, new Lexeme(word, currentMatcher.group()));
 				replaced = true;
 
 			}
