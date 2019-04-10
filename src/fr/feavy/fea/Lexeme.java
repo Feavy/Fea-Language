@@ -32,13 +32,28 @@ public class Lexeme {
 		return childs[index];
 	}
 	
+	public Lexeme[] getChilds() {
+		return childs;
+	}
+	
 	public void debug(int depth) {
 		String spaces = "";
 		for(int i = 0; i < depth*4; i++)
 			spaces += " ";
-		System.out.println(spaces+name+(isTerminal() ? " ("+content+")" : ""));
-		for(Lexeme c : childs)
+		System.out.println(spaces + name + (isTerminal() ? " ("+content+")" : ""));
+		for(Lexeme c : childs) {
 			c.debug(depth+1);
+			if(c.getName().equals("var_declaration")) {
+				System.out.println("-- Var declaration --");
+				VarDeclarationStatement vds = new VarDeclarationStatement(c);
+				System.out.println("Nom : "+vds.getVarName());
+				System.out.println("Type : "+vds.getVarType());
+				System.out.println("Tableau ? : "+vds.isArray());
+				if(vds.isArray())
+					System.out.println("Taille : "+vds.getArrayLength());
+				System.out.println("---------------------");
+			}
+		}
 	}
 	
 	/*@Override

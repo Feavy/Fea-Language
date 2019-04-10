@@ -33,13 +33,13 @@ public class Code {
 		if(lexemeStringMatcher.find()) {
 			if(lexemes.containsKey(lexemeStringMatcher.group(1))) {
 				Lexeme l =  lexemes.get(lexemeStringMatcher.group(1)).get(Integer.parseInt(lexemeStringMatcher.group(2)));
-				Matcher lexemeStringMatcher2 = Pattern.compile("[A-Za-z_]+_[0-9]+").matcher(l.getContent());
+				/*Matcher lexemeStringMatcher2 = Pattern.compile("[A-Za-z_]+_[0-9]+").matcher(l.getContent());
 				int foundAmount = 0;
 				while(lexemeStringMatcher2.find())
 					foundAmount++;
 				
 				if(foundAmount == 1)
-					return getLexeme(l.getContent());
+					return getLexeme(l.getContent());*/
 				return l;
 			}
 		}
