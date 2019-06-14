@@ -1,10 +1,13 @@
 package fr.feavy.fea;
 
+import fr.feavy.fea.statements.VarDeclarationStatement;
+
 public class Lexeme {
 
 	private String content;
 	private String name;
 	private Lexeme childs[];
+	private Lexeme parent;
 		
 	public Lexeme(String name, String content, Lexeme ...childs) {
 		this.name = name;
@@ -36,23 +39,27 @@ public class Lexeme {
 		return childs;
 	}
 	
+	public void setParent(Lexeme parent) {
+		this.parent = parent;
+	}
+	
+	public Lexeme getParent() {
+		return parent;
+	}
+	
 	public void debug(int depth) {
 		String spaces = "";
 		for(int i = 0; i < depth*4; i++)
 			spaces += " ";
 		System.out.println(spaces + name + (isTerminal() ? " ("+content+")" : ""));
+		
 		for(Lexeme c : childs) {
 			c.debug(depth+1);
-			if(c.getName().equals("var_declaration")) {
-				System.out.println("-- Var declaration --");
-				VarDeclarationStatement vds = new VarDeclarationStatement(c);
-				System.out.println("Nom : "+vds.getVarName());
-				System.out.println("Type : "+vds.getVarType());
-				System.out.println("Tableau ? : "+vds.isArray());
-				if(vds.isArray())
-					System.out.println("Taille : "+vds.getArrayLength());
-				System.out.println("---------------------");
-			}
+		}
+		
+		if(getName().equals("var_declaration") && !getParent().getName().equals("var_declaration")) {
+			VarDeclarationStatement vds = new VarDeclarationStatement(this);
+			vds.debug(depth);
 		}
 	}
 	

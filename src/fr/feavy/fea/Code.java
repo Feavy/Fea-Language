@@ -28,6 +28,10 @@ public class Code {
 		lexemes.get(word).add(l);
 	}
 
+	public Lexeme getCodeLexeme() {
+		return lexemes.get("stmt").get(lexemes.get("stmt").size()-1);
+	}
+	
 	public Lexeme getLexeme(String str) {
 		Matcher lexemeStringMatcher = Pattern.compile("([A-Za-z_]+)_([0-9]+)").matcher(str);
 		if(lexemeStringMatcher.find()) {
@@ -67,6 +71,8 @@ public class Code {
 				childs.add(current);
 			}
 		}
+		for(Lexeme child : childs)
+			child.setParent(l);
 		l.setChilds(childs.toArray(new Lexeme[0]));
 	}
 	

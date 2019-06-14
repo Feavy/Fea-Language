@@ -1,22 +1,3 @@
 main():int {
-	test:boolean = true;
-	nb:int = 9;
-	flottant:float = 35.6;
-	chaine:string = "Salut à tous !";
-	if(test) {
-		_tab1:int[3] = [1, "Salut", 3];
-		_tab2:int[3] = [1, 2, 3];
-		tab2:int[5];fl:float;
-		nb = 42;
-		if(true) {
-			//print("Tableau créé");
-			if(false) {
-			}
-		}else{
-			dansLeElse:string;
-			//print("Les tableaux sont quand-mêmes créées");
-		}
-	}else{
-		//print("Autre block");
-	}
+	tab:string[(5+2+(9-2)-9)*6];
 }

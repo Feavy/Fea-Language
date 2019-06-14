@@ -59,8 +59,6 @@ public class Grammar {
 	public String toString() {
 		Iterator<Entry<String, String>> symbolsIterator = symbols.entrySet().iterator();
 		Iterator<Entry<String, String>> terminalSymbolsIterator = terminalSymbols.entrySet().iterator();
-		Iterator<Entry<String, ArrayList<Lexeme>>> lexemeIterators;
-		Entry<String, ArrayList<Lexeme>> currentLexemes;
 		Entry<String, String> e;
 
 		StringBuilder rep = new StringBuilder();
