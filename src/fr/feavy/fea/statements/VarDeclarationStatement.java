@@ -2,7 +2,7 @@ package fr.feavy.fea.statements;
 
 import fr.feavy.fea.Lexeme;
 
-public class VarDeclarationStatement {
+public class VarDeclarationStatement extends Statement{
 
 	private String varName;
 	private String varType;
@@ -11,8 +11,9 @@ public class VarDeclarationStatement {
 	private Lexeme arrayLength;
 	
 	public VarDeclarationStatement(Lexeme lexeme) {
-		Lexeme parent = lexeme.getParent();
-		Lexeme childs[] = lexeme.getChilds();
+		super(lexeme);
+		Lexeme parent = getParent();
+		Lexeme childs[] = getChilds();
 		if(childs[0].getName().equals("var_declaration")) {
 			isArray = true;
 			varName = childs[0].getChild(0).getContent();
@@ -31,6 +32,7 @@ public class VarDeclarationStatement {
 			varName = childs[0].getContent();
 			varType = childs[1].getContent();
 		}
+		debug(0);
 	}
 	
 	public String getVarName() {
@@ -58,7 +60,7 @@ public class VarDeclarationStatement {
 		for(int i = 0; i < depth*4; i++)
 			spaces += " ";
 		
-		System.out.println(spaces+"-- Var declaration --");
+		System.out.println(spaces+"--= Var declaration =--");
 		System.out.println(spaces+"Nom : "+getVarName());
 		System.out.println(spaces+"Type : "+getVarType());
 		System.out.println(spaces+"Tableau : "+isArray());
@@ -67,7 +69,7 @@ public class VarDeclarationStatement {
 				System.out.println(spaces+"  Taille : dynamique");
 			else {
 				System.out.println(spaces+"  Taille : ");
-				getArrayLength().debug(depth);
+				getArrayLength().debug(depth+1);
 			}
 		System.out.println(spaces+"---------------------");
 	}

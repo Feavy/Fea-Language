@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import fr.feavy.fea.statements.Statement;
+
 public class Main {
 
 	public static Grammar grammar = new Grammar();
@@ -12,17 +14,19 @@ public class Main {
 		grammar.putSymbol("stmt", "<compound_stmt>|<simple_stmt>");
 
 		grammar.putSymbol("compound_stmt", "<if_stmt>|<while_stmt>|<func_decl>");
-		grammar.putSymbol("if_stmt", "if\\(<expr>\\)\\{(<stmt>)*\\}(else\\{(<stmt>)*\\})?");
+		grammar.putSymbol("if_head", "if\\(<expr>\\)");
+		grammar.putSymbol("if_stmt", "<if_head>\\{(<stmt>)*\\}(else\\{(<stmt>)*\\})?");
 		grammar.putSymbol("while_stmt", "while\\{((<stmt>)*)\\}");
 
-		grammar.putSymbol("simple_stmt", "<var_assignment>|<var_declaration>;");
+		grammar.putSymbol("simple_stmt", "<var_assignment>;|<var_declaration>;");
 
-		grammar.putSymbol("type", "string|boolean|int|float");
+		grammar.putSymbol("type", "(string|boolean|int|float)(\\[\\])?");
 		grammar.putSymbol("var_assignment_left", "(<var_declaration>|NAME)=");
-		grammar.putSymbol("var_assignment", "<var_assignment_left>(<expr>|\\[(<expr>(,<expr>)*)?\\]);");
-		grammar.putSymbol("var_declaration", "NAME:<type>|<var_declaration>\\[(<expr>)?\\]");
+		grammar.putSymbol("var_assignment", "<var_assignment_left>(<expr>|\\[(<expr>(,<expr>)*)?\\])");
+		grammar.putSymbol("var_declaration", "NAME:<type>|<var_declaration>\\[<expr>\\]");
 
 		grammar.putSymbol("func_signature", "NAME\\((NAME:<type>(,NAME:<type>)*)?\\):<type>");
+		
 		grammar.putSymbol("func_decl", "<func_signature>\\{(<stmt>)*\\}");
 
 		grammar.putSymbol("operator", "\\+|-|\\*");
@@ -46,10 +50,12 @@ public class Main {
 
 			if (valid) {
 
-				code.processLexemes(code.getCodeLexeme());
-
-				code.getCodeLexeme().debug(0);
-
+				Statement[] rep = code.processLexemes(code.getCodeLexeme());
+				
+				//code.getCodeLexeme().debug(0);
+								
+				System.out.println(rep[0]);
+				/*
 				BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 				String line;
 				while (!(line = reader.readLine()).equals("end")) {
@@ -60,7 +66,7 @@ public class Main {
 						System.err.println("Inexistant");
 					}
 				}
-				reader.close();
+				reader.close();*/
 
 			}else {
 				System.err.println("Code invalide.");

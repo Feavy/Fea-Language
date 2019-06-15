@@ -8,6 +8,8 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import fr.feavy.fea.statements.Statement;
+
 public class Code {
 
 	private Map<String, ArrayList<Lexeme>> lexemes;
@@ -56,24 +58,54 @@ public class Code {
 		return lexemes.get(word).size();
 	}
 
-	public void processLexemes(Lexeme l) {
+	public Statement[] processLexemes(Lexeme l) {
 		Matcher lexemeStringMatcher = Pattern.compile("<([A-Za-z_]+_[0-9]+)>|([A-Z]+_[0-9]+)").matcher(l.getContent());
+		
 		ArrayList<Lexeme> childs = new ArrayList<>();
+		
 		Lexeme current;
+		Statement currentStmts[] = new Statement[0];
+		
+		Statement stmt;
+		ArrayList<Statement> stmts = new ArrayList<>();
 		while(lexemeStringMatcher.find()) {
 			if(lexemeStringMatcher.group(1) != null) {
 				current = getLexeme(lexemeStringMatcher.group(1));
-				processLexemes(current);
+				currentStmts = processLexemes(current);
 				childs.add(current);
+				
+				if(currentStmts != null)
+					for(Statement st : currentStmts)
+						stmts.add(st);
 			}else if(lexemeStringMatcher.group(2) != null) {
 				current = getLexeme(lexemeStringMatcher.group(2));
-				processLexemes(current);
+				 processLexemes(current);
 				childs.add(current);
 			}
 		}
+		
 		for(Lexeme child : childs)
 			child.setParent(l);
 		l.setChilds(childs.toArray(new Lexeme[0]));
+		
+		if(l.getName().equals("stmt")) {
+			stmt = Statement.createStatement(l);
+			if(stmts != null) {
+				stmt.setChildStatements(stmts.toArray(new Statement[0]));
+				stmts.clear();
+			}
+			stmts.add(stmt);
+		} else {
+			if(currentStmts != null && currentStmts.length > 0) {
+				
+			} else
+				stmts = null;
+		}
+		
+		if(stmts != null)
+			return stmts.toArray(new Statement[0]);
+		else
+			return null;
 	}
 	
 	@Override

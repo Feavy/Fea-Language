@@ -56,11 +56,6 @@ public class Lexeme {
 		for(Lexeme c : childs) {
 			c.debug(depth+1);
 		}
-		
-		if(getName().equals("var_declaration") && !getParent().getName().equals("var_declaration")) {
-			VarDeclarationStatement vds = new VarDeclarationStatement(this);
-			vds.debug(depth);
-		}
 	}
 	
 	/*@Override

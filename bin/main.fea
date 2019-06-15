@@ -1,3 +1,8 @@
-main():int {
-	tab:string[(5+2+(9-2)-9)*6];
+main():int[] {
+	tab:string[3] = ["Bonjour", "à", "tous"];
+	tab2:string[] = ["Bonjour", "à", "tous"];
+	if(true) {
+		nb:int = 42;
+		tab5:string[66];
+	}
 }
