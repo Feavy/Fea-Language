@@ -1,8 +1,0 @@
-main():int[] {
-	tab:string[3] = ["Bonjour", "à", "tous"];
-	tab2:string[] = ["Bonjour", "à", "tous"];
-	if(true) {
-		nb:int = 42;
-		tab5:string[66];
-	}
-}
