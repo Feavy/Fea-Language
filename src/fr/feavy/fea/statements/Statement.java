@@ -37,6 +37,10 @@ public class Statement {
 	public Lexeme[] getChilds() {
 		return childs;
 	}
+	
+	public Statement[] getChildsStatements() {
+		return childStatements;
+	}
 
 	public final static Map<String, Class<? extends Statement>> classes = new HashMap<>();
 	static {
@@ -46,7 +50,6 @@ public class Statement {
 	}
 	
 	public static Statement createStatement(Lexeme lexeme) {
-
 		lexeme = lexeme.getChild(0).getChild(0);
 		String name = lexeme.getName();
 		if(classes.containsKey(name)) {
@@ -62,14 +65,14 @@ public class Statement {
 
 	@Override
 	public String toString() {
-		String rep = "Statement : " + lexeme.getName()+"\n";
-		if (childStatements.length > 0) {
+		String rep = "Statement : " + lexeme.getName();
+		/*if (childStatements.length > 0) {
 			rep += "Childs (" + childStatements.length + ") :\n";
 			for (Statement st : childStatements) {
 				if (st != null)
 					rep += st.toString();
 			}
-		}
+		}*/
 		return rep;
 	}
 

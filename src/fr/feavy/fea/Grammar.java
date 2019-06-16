@@ -173,9 +173,11 @@ public class Grammar {
 
 		int length = 0;
 
-		currentMatcher = Pattern.compile("<stmt_[0-9]+>").matcher(input);
-		while (currentMatcher.find())
+		currentMatcher = Pattern.compile("<stmt_([0-9]+)>").matcher(input);
+		while (currentMatcher.find()) {
 			length += currentMatcher.end() - currentMatcher.start();
+			currentCode.addTerminalLexeme(currentCode.getLexeme("stmt_"+currentMatcher.group(1)));
+		}
 
 		System.out.println("Code final : " + input);
 		return input.length() == length;

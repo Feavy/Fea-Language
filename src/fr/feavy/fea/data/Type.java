@@ -9,10 +9,22 @@ public class Type {
 	private boolean isDynamicArray;
 	private Lexeme arrayLength;
 	
+	public Type(Lexeme lexeme) {
+		if(lexeme.getContent().endsWith("]")) {
+			isArray = true;
+			isDynamicArray = true;
+			type = lexeme.getContent().replace("[]", "");
+		}else {
+			isArray = false;
+			type = lexeme.getContent();
+		}
+	}
+	
 	public Type(String type, boolean isArray) {
 		this.type = type;
 		this.isArray = isArray;
-		this.isDynamicArray = true;
+		if(isArray)
+			this.isDynamicArray = true;
 		this.arrayLength = null;
 	}
 	
@@ -22,10 +34,20 @@ public class Type {
 		this.isDynamicArray = false;
 		this.arrayLength = arraySize;
 	}
-
-
 	
-	public String getVarType() {
+	@Override
+	public String toString() {
+		String rep = type;
+		if(isArray) {
+			rep += "[";
+			if(!isDynamicArray)
+				rep += arrayLength.getContent();
+			rep += "]";
+		}
+		return rep;
+	}
+	
+	public String getType() {
 		return type;
 	}
 

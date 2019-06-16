@@ -1,77 +1,45 @@
 package fr.feavy.fea.statements;
 
 import fr.feavy.fea.Lexeme;
+import fr.feavy.fea.data.Type;
 
 public class VarDeclarationStatement extends Statement{
 
 	private String varName;
-	private String varType;
-	private boolean isArray;
-	private boolean isDynamicArray;
-	private Lexeme arrayLength;
+	private Type varType;
 	
 	public VarDeclarationStatement(Lexeme lexeme) {
 		super(lexeme);
-		Lexeme parent = getParent();
+		String varType;
 		Lexeme childs[] = getChilds();
 		if(childs[0].getName().equals("var_declaration")) {
-			isArray = true;
+			// Array = true
 			varName = childs[0].getChild(0).getContent();
 			varType = childs[0].getChild(1).getContent();
 			if(childs.length > 1 && childs[1].getName().equals("expr")) {
-				arrayLength = childs[1];
-				isDynamicArray = false;
+				this.varType = new Type(varType, true, childs[1]);
 			}else {
-				if(parent.getName().equals("var_assignment_left") && parent.getParent().getChilds().length > 1) {
-					isDynamicArray = false;
-					arrayLength = new Lexeme("NUMBER", (parent.getParent().getChilds().length-1)+"");
-				}else
-				isDynamicArray = true;
+				// Dynamic = true
+				this.varType = new Type(varType, true);
 			}
 		} else {
 			varName = childs[0].getContent();
 			varType = childs[1].getContent();
+			this.varType = new Type(childs[1]);
 		}
-		debug(0);
+	}
+	
+	@Override
+	public String toString() {
+		return "Declaration              : "+this.varName+" is "+this.varType;
 	}
 	
 	public String getVarName() {
 		return varName;
 	}
 
-	public String getVarType() {
+	public Type getVarType() {
 		return varType;
-	}
-
-	public boolean isArray() {
-		return isArray;
-	}
-
-	public Lexeme getArrayLength() {
-		return arrayLength;
-	}
-	
-	public boolean isDynamicArray() {
-		return isDynamicArray;
-	}
-	
-	public void debug(int depth) {
-		String spaces = "";
-		for(int i = 0; i < depth*4; i++)
-			spaces += " ";
-		
-		System.out.println(spaces+"--= Var declaration =--");
-		System.out.println(spaces+"Nom : "+getVarName());
-		System.out.println(spaces+"Type : "+getVarType());
-		System.out.println(spaces+"Tableau : "+isArray());
-		if(isArray())
-			if(isDynamicArray)
-				System.out.println(spaces+"  Taille : dynamique");
-			else {
-				System.out.println(spaces+"  Taille : ");
-				getArrayLength().debug(depth+1);
-			}
-		System.out.println(spaces+"---------------------");
 	}
 	
 }

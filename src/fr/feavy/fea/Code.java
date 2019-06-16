@@ -2,9 +2,12 @@ package fr.feavy.fea;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,10 +16,12 @@ import fr.feavy.fea.statements.Statement;
 public class Code {
 
 	private Map<String, ArrayList<Lexeme>> lexemes;
+	private Set<Lexeme> terminalLexemes;
 	private String content;
 
 	public Code(String content) {
 		this.lexemes = new HashMap<String, ArrayList<Lexeme>>();
+		this.terminalLexemes = new HashSet<>();
 		this.content = content;
 	}
 
@@ -30,8 +35,12 @@ public class Code {
 		lexemes.get(word).add(l);
 	}
 
-	public Lexeme getCodeLexeme() {
-		return lexemes.get("stmt").get(lexemes.get("stmt").size()-1);
+	public void addTerminalLexeme(Lexeme l) {
+		this.terminalLexemes.add(l);
+	}
+	
+	public Lexeme[] getTerminalLexemes() {
+		return terminalLexemes.toArray(new Lexeme[0]);
 	}
 	
 	public Lexeme getLexeme(String str) {
@@ -39,13 +48,6 @@ public class Code {
 		if(lexemeStringMatcher.find()) {
 			if(lexemes.containsKey(lexemeStringMatcher.group(1))) {
 				Lexeme l =  lexemes.get(lexemeStringMatcher.group(1)).get(Integer.parseInt(lexemeStringMatcher.group(2)));
-				/*Matcher lexemeStringMatcher2 = Pattern.compile("[A-Za-z_]+_[0-9]+").matcher(l.getContent());
-				int foundAmount = 0;
-				while(lexemeStringMatcher2.find())
-					foundAmount++;
-				
-				if(foundAmount == 1)
-					return getLexeme(l.getContent());*/
 				return l;
 			}
 		}
