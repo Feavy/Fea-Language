@@ -8,8 +8,8 @@ public class VarDeclarationStatement extends Statement{
 	private String varName;
 	private Type varType;
 	
-	public VarDeclarationStatement(Lexeme lexeme) {
-		super(lexeme);
+	public VarDeclarationStatement(Lexeme lexeme, Statement stmts[]) {
+		super(lexeme, new Statement[0]);
 		String varType;
 		Lexeme childs[] = getChilds();
 		if(childs[0].getName().equals("var_declaration")) {
@@ -31,7 +31,7 @@ public class VarDeclarationStatement extends Statement{
 	
 	@Override
 	public String toString() {
-		return "Declaration              : "+this.varName+" is "+this.varType;
+		return "Declaration : "+this.varName+" is "+this.varType;
 	}
 	
 	public String getVarName() {

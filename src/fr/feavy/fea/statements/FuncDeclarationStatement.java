@@ -8,8 +8,8 @@ public class FuncDeclarationStatement extends Statement{
 	private Type type;
 	private String name;
 	
-	public FuncDeclarationStatement(Lexeme lexeme) {
-		super(lexeme);
+	public FuncDeclarationStatement(Lexeme lexeme, Statement[] childs) {
+		super(lexeme, childs);
 		Lexeme child = lexeme.getChild(0);
 		this.name = child.getChild(0).getContent();
 		if(child.getChilds().length > 1)

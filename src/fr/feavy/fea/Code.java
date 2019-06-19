@@ -22,7 +22,7 @@ public class Code {
 	public Code(String content) {
 		this.lexemes = new HashMap<String, ArrayList<Lexeme>>();
 		this.terminalLexemes = new HashSet<>();
-		this.content = content;
+		this.content = content.replaceAll(">", "§").replaceAll("<", "\\$");
 	}
 
 	public String getContent() {
@@ -91,16 +91,14 @@ public class Code {
 		l.setChilds(childs.toArray(new Lexeme[0]));
 		
 		if(l.getName().equals("stmt")) {
-			stmt = Statement.createStatement(l);
 			if(stmts != null) {
-				stmt.setChildStatements(stmts.toArray(new Statement[0]));
+				stmt = Statement.createStatement(l, stmts.toArray(new Statement[0]));
 				stmts.clear();
+			}else {
+				stmt = Statement.createStatement(l, new Statement[0]);
 			}
 			stmts.add(stmt);
-		} else {
-			if(currentStmts != null && currentStmts.length > 0) {
-				
-			} else
+		} else if(currentStmts == null || currentStmts.length == 0){
 				stmts = null;
 		}
 		

@@ -1,7 +1,5 @@
 package fr.feavy.fea.statements;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,16 +12,12 @@ public class Statement {
 	private Lexeme childs[];
 
 	private Statement childStatements[];
-
-	protected Statement(Lexeme l) {
+	
+	protected Statement(Lexeme l, Statement childs[]) {
 		this.lexeme = l;
 		this.parent = l.getParent();
 		this.childs = l.getChilds();
-		this.childStatements = new Statement[0];
-	}
-
-	public void setChildStatements(Statement statements[]) {
-		this.childStatements = statements;
+		this.childStatements = childs;
 	}
 
 	public Lexeme getLexeme() {
@@ -47,22 +41,36 @@ public class Statement {
 		classes.put("var_declaration", VarDeclarationStatement.class);
 		classes.put("func_decl", FuncDeclarationStatement.class);
 		classes.put("var_assignment", VarAssignmentStatement.class);
+		classes.put("if_stmt", IfStatement.class);
 	}
 	
-	public static Statement createStatement(Lexeme lexeme) {
+	public static Statement createStatement(Lexeme lexeme, Statement[] childs) {
 		lexeme = lexeme.getChild(0).getChild(0);
 		String name = lexeme.getName();
 		if(classes.containsKey(name)) {
 			try {
-				return (Statement)classes.get(name).getConstructors()[0].newInstance(lexeme);
+				return (Statement)classes.get(name).getConstructors()[0].newInstance(lexeme, childs);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		return new Statement(lexeme);
+		return new Statement(lexeme, new Statement[0]);
 	}
 
+	public String print(int depth) {
+		String spaces = "";
+		for(int i = 0; i < depth; i++)
+			spaces += "    ";
+		String rep = spaces+toString();
+		if(childStatements.length > 0) {
+			rep += "\n";
+			for(Statement st : childStatements)
+				rep += st.print(depth+1)+"\n";
+		}
+		return rep;
+	}
+	
 	@Override
 	public String toString() {
 		String rep = "Statement : " + lexeme.getName();

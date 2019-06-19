@@ -1,14 +1,10 @@
 main():int[] {
-	tab:string[3] = ["Bonjour", "à", "tous"];
-	tab2:string[] = ["Bonjour", "à", "tous"];
-	tab = ["Un", "deux", "trois"];
-	if(true) {
-		nb:int = 42;
-		tab5:string[66];
-		nb = 72;
+	nb:int = 42;
+	if(nb >= 42) {
+		varIf:int;
+		varIf2:int;
+	} else if(nb<30){
+		varElse:int;
+		varElse2:int;
 	}
-}
-
-main2() {
-	
 }

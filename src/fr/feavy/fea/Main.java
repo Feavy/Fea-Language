@@ -13,23 +13,32 @@ public class Main {
 	public static Grammar grammar = new Grammar();
 
 	static {
+		grammar.putSymbol("bool_operator", "\\|\\||&&");
+		grammar.putSymbol("compare_operator", "==|!=|\\$=|§=|§|\\$");	// § becomes >, $ becomes < while parsing the code
+		
 		grammar.putSymbol("stmt", "<compound_stmt>|<simple_stmt>");
 
 		grammar.putSymbol("compound_stmt", "<if_stmt>|<while_stmt>|<func_decl>");
-		grammar.putSymbol("if_head", "if\\(<expr>\\)");
-		grammar.putSymbol("if_stmt", "<if_head>\\{(<stmt>)*\\}(else\\{(<stmt>)*\\})?");
-		grammar.putSymbol("while_stmt", "while\\{((<stmt>)*)\\}");
+		
+		grammar.putSymbol("if_head", "if\\(<test>\\)");
+				
+		grammar.putSymbol("if_stmt", "<if_head>\\{(<stmt>)*\\}|<if_else><stmt>|<if_else>\\{(<stmt>)*\\}");
+		grammar.putSymbol("if_else", "<if_stmt>else");
+		
+		grammar.putSymbol("while_stmt", "while\\{((<test>)*)\\}");
 
 		grammar.putSymbol("simple_stmt", "<var_assignment>;|<var_declaration>;");
 
 		grammar.putSymbol("type", "void|((string|boolean|int|float)(\\[\\])?)");
 		grammar.putSymbol("var_assignment_left", "(<var_declaration>|NAME)=");
-		grammar.putSymbol("var_assignment", "<var_assignment_left><expr>");
+		grammar.putSymbol("var_assignment", "<var_assignment_left>(<expr>|<test>)");
 		grammar.putSymbol("var_declaration", "NAME:<type>|<var_declaration>\\[<expr>\\]");
 
 		grammar.putSymbol("func_signature", "NAME\\((NAME:<type>(,NAME:<type>)*)?\\)(:<type>)?");
 
 		grammar.putSymbol("func_decl", "<func_signature>\\{(<stmt>)*\\}");
+		
+		grammar.putSymbol("test", "<expr><compare_operator><expr>|\\(<test>\\)|<test><bool_operator><test>|true|false");
 
 		grammar.putSymbol("operator", "\\+|-|\\*");
 		grammar.putSymbol("expr",
@@ -44,8 +53,9 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		boolean lexemeDebug = false;
-
+		boolean lexemeDebug = true;
+		boolean printLexemes = false;
+		
 		try {
 			Code code = new Code(loadCodeFromFile("/resources/main.fea"));
 			boolean valid = grammar.isValid(code);
@@ -60,13 +70,15 @@ public class Main {
 					Statement[] rep = code.processLexemes(terminal);
 
 					for (Statement st : rep) {
-						printStatement(st, 0);
+						System.out.println(st.print(0));
+						
 						System.out.println();
 					}
 
 				}
 
 				if (lexemeDebug) {
+					if(printLexemes)
 					for (Lexeme terminal : terminalLexemes)
 						terminal.debug(0);
 
@@ -97,19 +109,6 @@ public class Main {
 
 		// 1 - Remplacer les strings par STRING, noms par NAME, nombres par NUMBER...
 		// 2 - Exécuter la grammaire en boucle tant qu'il y a des transformations.
-	}
-
-	private static void printStatement(Statement t, int depth) {
-		String spaces = "";
-		for (int i = 0; i < depth; i++)
-			spaces += "    ";
-
-		System.out.println(spaces + t.toString());
-
-		Statement[] childs = t.getChildsStatements();
-		for (Statement child : childs)
-			printStatement(child, depth + 1);
-
 	}
 
 	public static String loadCodeFromFile(String path) throws IOException {

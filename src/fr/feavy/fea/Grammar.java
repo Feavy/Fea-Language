@@ -2,11 +2,13 @@ package fr.feavy.fea;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,7 +19,7 @@ public class Grammar {
 	private Map<String, String> symbols;
 	private Map<String, String> terminalSymbols;
 
-	private List<String> keywords;
+	private Set<String> keywords;
 	
 	private Code currentCode;
 
@@ -28,8 +30,7 @@ public class Grammar {
 	public Grammar(LinkedHashMap<String, String> symbols, LinkedHashMap<String, String> terminalSymbols) {
 		this.symbols = symbols;
 		this.terminalSymbols = terminalSymbols;
-		this.keywords = new ArrayList<String>();
-		autoExtractKeywords();
+		this.keywords = new HashSet<String>();
 	}
 
 	public void autoExtractKeywords() {
@@ -98,7 +99,7 @@ public class Grammar {
 			while (currentMatcher.find()) {
 				current = currentMatcher.group();
 				if (!keywords.contains(current)) {
-					System.out.println("replace : " + current);
+					System.out.println("replaced : " + current);
 					constants.get(e.getKey()).add(current);
 					currentCode.addLexeme(e.getKey(), new Lexeme(e.getKey(), current));
 					input = input.substring(0, currentMatcher.start() + offset) + "<"+e.getKey().toLowerCase()+">"
@@ -142,9 +143,10 @@ public class Grammar {
 				
 				offset += ("<" + word + "_"+index+">").length() - (currentMatcher.end() - currentMatcher.start());
 				
-				currentCode.addLexeme(word, new Lexeme(word, currentMatcher.group()));
+				currentCode.addLexeme(word, new Lexeme(word, currentMatcher.group().replaceAll("§", ">").replaceAll("\\$", "<")));
 				replaced = true;
-
+				if(word.equals("compare_operator"))
+					System.out.println("Add compare operator : "+currentMatcher.group());
 			}
 			input = newCode;
 		}

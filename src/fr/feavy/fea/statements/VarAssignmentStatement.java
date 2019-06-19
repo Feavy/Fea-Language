@@ -13,14 +13,14 @@ public class VarAssignmentStatement extends Statement{
 	
 	private Value newValue;
 	
-	public VarAssignmentStatement(Lexeme lexeme) {
-		super(lexeme);
+	public VarAssignmentStatement(Lexeme lexeme, Statement stmts[]) {
+		super(lexeme, new Statement[0]);
 		Lexeme child = lexeme.getChild(0);
 		this.varName = child.getContent();
 				
 		if(child.getChild(0).getName().equals("var_declaration")) {
 			this.isDeclaration = true;
-			this.declarationStmt = new VarDeclarationStatement(child.getChild(0));
+			this.declarationStmt = new VarDeclarationStatement(child.getChild(0), null);
 			this.varName = declarationStmt.getVarName();
 		}else {
 			this.isDeclaration = false;
@@ -34,9 +34,9 @@ public class VarAssignmentStatement extends Statement{
 	public String toString() {
 		String rep;
 		if(isDeclaration)
-			rep = "Declaration & Assignment : "+varName;
+			rep = "Declaration : "+varName+" is "+declarationStmt.getVarType();
 		else	
-			rep = "Assignment               : "+varName;
+			rep = "Assignment  : "+varName;
 		rep += " = "+newValue;
 		return rep;
 	}
